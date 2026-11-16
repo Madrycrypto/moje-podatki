@@ -80,6 +80,9 @@ button.preset:focus-visible,.counter button:focus-visible{outline:3px solid var(
 .y-help{line-height:1.55;color:#b8cee3;font-size:14px}
 #youngWorkspace[hidden],#adultWorkspace[hidden]{display:none!important}
 @media(max-width:700px){.profile-tab{flex:1;font-size:15px;padding:12px 8px}.young-table{min-width:550px}}
+
+.y-bracket{font-weight:700;white-space:nowrap}.y-ok{color:#68e3b7}.y-warn{color:#ffd386}.y-tax{color:#ff9a9e}.young-table tr.y-cross{background:rgba(255,211,134,.08)}.young-table tr.y-tax-row{background:rgba(255,128,128,.055)}
+#youngCharts svg{background:#132137;border:1px solid #354762;border-radius:10px;height:260px}#youngThresholdInfo{line-height:1.6}.limit-state{font-size:12px;color:#d6e6f6}
 </style><style>#legacyResultBindings { display:none !important; }</style></head><body><main class="wrap"><div class="flexline"><div><h1>Kalkulator PIT i nadgodzin <span class="pill" id="yearBadge">2027</span></h1><p class="sub">Ile naprawdę zostaje za soboty? Miesięczne przelewy vs. roczne rozliczenie PIT.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="preset" id="csv">Eksport miesięcy CSV</button><button class="preset" id="backup">Pobierz kopię danych</button><button class="preset" id="restore">Wczytaj kopię danych</button><input accept=".json,application/json" id="restoreFile" style="display:none" type="file"/></div></div>
 <nav class="profile-tabs" role="tablist" aria-label="Typ kalkulatora"><button type="button" id="tabAdult" class="profile-tab" role="tab" aria-selected="true" aria-controls="adultWorkspace">Jestem dorosły</button><button type="button" id="tabYoung" class="profile-tab" role="tab" aria-selected="false" aria-controls="youngWorkspace">Jestem młody (do 26 lat)</button></nav>
 <section id="youngWorkspace" hidden aria-label="Kalkulator dla osób do 26 lat">
@@ -102,17 +105,18 @@ button.preset:focus-visible,.counter button:focus-visible{outline:3px solid var(
 <div class="young-ot-presets"><span>Ustaw we wszystkich miesiącach:</span><button type="button" data-young-preset="half" data-num="0">0</button><button type="button" data-young-preset="half" data-num="1">1</button><button type="button" data-young-preset="half" data-num="2">2</button><button type="button" data-young-preset="half" data-num="3">3</button><button type="button" data-young-preset="half" data-num="4">4</button></div>
 <p id="youngOvertimeNote" class="hint">Na etacie: 100% to normalna stawka + 100% dodatku, a 50% to stawka + 50% dodatku. Na zleceniu takie dodatki obowiązują tylko po uzgodnieniu w umowie — tutaj jest to symulacja przy wybranych mnożnikach.</p>
 <div class="young-ot-grid" id="youngOvertimeMonths"></div>
-<h3>Rozliczenie miesięczne</h3><div style="overflow-x:auto"><table class="young-table"><thead><tr><th>Miesiąc</th><th>Zwykłe godziny</th><th>100% / 50%</th><th>Brutto razem</th><th>Składki ZUS + zdrowotna</th><th>Na konto (po zaliczce PIT)</th></tr></thead><tbody id="youngRows"></tbody></table></div></div>
+<h3>Rozliczenie miesięczne — narastająco i progi</h3><p class="hint">Zielony = zwolnienie PIT-0, żółty = limit zwolnienia przekroczony, czerwony = naliczona zaliczka PIT. Próg PIT-0 dotyczy kwalifikującego się przychodu brutto (do dnia 26. urodzin), a próg stawki PIT — dochodu podatkowego.</p><div class="scroll"><table class="young-table" style="min-width:980px"><thead><tr><th>Miesiąc</th><th>Zwykłe godziny</th><th>100% / 50%</th><th>Brutto razem</th><th>Brutto narastająco</th><th>Wykorzystane PIT-0</th><th>Podstawa PIT narastająco</th><th>Zaliczka PIT</th><th>Na konto</th><th>Status</th></tr></thead><tbody id="youngRows"></tbody></table></div></div>
+<div class="card" id="youngCharts"><h2>Wykresy — gdzie kończy się PIT-0 i spada wypłata</h2><p class="hint"><b style="color:#62e3ac">Zielona linia</b> — narastający przychód (wykres 1) / wypłata netto (wykres 2). <b style="color:#79b6ff">Niebieska</b> — pobrana zaliczka PIT. <b style="color:#ffd386">Żółta linia</b> — próg PIT-0.</p><div class="two"><div><h3>Przychód brutto narastająco i limit 85 528 zł</h3><svg id="youngIncomeChart" class="chart" role="img" aria-label="Narastający przychód brutto i limit PIT-0"></svg></div><div><h3>Wypłata netto i pobrana zaliczka PIT</h3><svg id="youngNetChart" class="chart" role="img" aria-label="Wypłata miesięczna netto oraz podatek"></svg></div></div><h3>Limit dochodów dziecka dla ulg rodziców (odrębny od PIT-0)</h3><svg id="youngParentChart" class="chart" role="img" aria-label="Narastające dochody dziecka i roczny limit dla ulg rodziców"></svg><div id="youngThresholdInfo" class="dep-status" aria-live="polite"></div><p class="hint">Na zleceniu studenckim bez składek spadek netto pojawi się, gdy płatnik zacznie potrącać PIT. W przypadku etatu składki są potrącane także przed przekroczeniem limitu. Ostateczny podatek weryfikowany jest w rozliczeniu rocznym.</p></div>
 <div class="card" id="youngParentCard"><h2>Limit zarobków studenta — ulgi rodziców</h2>
 <p class="y-help">To <b>oddzielny limit</b> od PIT-0 85 528 zł. Dotyczy pełnoletniego uczącego się dziecka do ukończenia 25 lat, przy spełnieniu pozostałych warunków ulgi prorodzinnej i rodzin 4+. W przypadku innych dzieci lub dodatkowych źródeł dochodu trzeba zweryfikować cały stan faktyczny.</p>
 <div class="field-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:14px 0">
-<div class="field"><label for="youngParentLimit">Roczny limit dochodów dla ulg rodzica (zł)</label><input id="youngParentLimit" type="number" min="0" step="0.01" value="25000"/><small id="youngParentLimitSource" class="hint">2027: 25 000 zł to szacunek, nie urzędowy limit.</small></div>
+<div class="field"><label for="youngParentLimit">Roczny limit dochodów dla ulg rodzica (zł)</label><input id="youngParentLimit" type="number" min="0" step="0.01" value="0"/><label class="toggle" style="margin-top:8px"><input id="youngParentAuto" type="checkbox" checked/> Automatycznie stosuj zweryfikowany limit</label><small id="youngParentLimitSource" class="hint">2027: oficjalny limit niepotwierdzony. Prognoza nie jest automatycznie stosowana.</small><small id="youngLimitSync" class="hint" aria-live="polite">Limity: sprawdzanie aktualizacji online…</small></div>
 <div class="field"><label for="youngParentOther">Inne dochody/przychody liczone do limitu (zł)</label><input id="youngParentOther" type="number" min="0" step="0.01" value="0"/><small class="hint">Wpisz dodatkowe kwoty podlegające wliczeniu, nieuwzględnione w tym kalkulatorze.</small></div>
 </div>
 <div class="young-summary">
 <div class="metric"><small>Kwota uwzględniana do limitu rodziców</small><strong id="youngParentCounted">0 zł</strong></div>
-<div class="metric"><small>Limit dla wybranego roku</small><strong id="youngParentMax">25 000 zł</strong></div>
-<div class="metric"><small>Pozostało do limitu</small><strong id="youngParentRemaining">25 000 zł</strong></div>
+<div class="metric"><small>Limit dla wybranego roku</small><strong id="youngParentMax">—</strong></div>
+<div class="metric"><small>Pozostało do limitu</small><strong id="youngParentRemaining">—</strong></div>
 </div>
 <p id="youngParentWarning" class="y-help" aria-live="polite"></p>
 </div>
@@ -349,7 +353,7 @@ function youngCompute(includeOvertime=true){
   const socRate=contract==='etat'?0.1371:(noContrib?0:(el('youngSickness').value==='yes'?0.1371:0.1126));
   const social=gross*socRate,health=noContrib?0:(gross-social)*.09;
   const payDate=new Date(year,i+1,0,12),youngEligible=!birthday||payDate<birthday;
-  const exempt=youngEligible?Math.min(gross,Math.max(0,85528-exemptUsed)):0;
+  const exempt=youngEligible?Math.min(gross,Math.max(0,YOUNG_PIT0-exemptUsed)):0;
   exemptUsed+=exempt;
   const taxablePart=Math.max(0,gross-exempt);
   const deductibleSocial=gross>0?social*taxablePart/gross:0;
@@ -361,7 +365,7 @@ function youngCompute(includeOvertime=true){
   const monthTax=Math.max(0,bracket(annualTaxBase,scheme)-bracket(before,scheme)-pit2);
   const withheld=Math.round(monthTax);annualWithheld+=withheld;
   annualGross+=gross;annualSocial+=social;annualHealth+=health;
-  months.push({baseGross,ot,gross,social,health,taxable,exempt,withheld,netBeforePit:gross-social-health,netTransfer:gross-social-health-withheld});
+  months.push({baseGross,ot,gross,social,health,taxable,exempt,withheld,cumGross:annualGross,cumExempt:exemptUsed,cumTaxable:annualTaxBase,netBeforePit:gross-social-health,netTransfer:gross-social-health-withheld});
  }
  // Po odjęciu ulgi PIT-0 zastosowanie ma również 30 tys. zł kwoty wolnej.
  const pit=Math.max(0,Math.round(bracket(annualTaxBase,scheme)-3600));
@@ -369,22 +373,39 @@ function youngCompute(includeOvertime=true){
  annualTransfers:annualGross-annualSocial-annualHealth-annualWithheld,
  net:annualGross-annualSocial-annualHealth-pit,birthday};
 }
+let YOUNG_PIT0=85528;
+function youngChart(svgId,series,maximum,threshold){
+ const svg=el(svgId);if(!svg)return;const w=600,h=260,l=64,r=22,t=25,b=43,ww=w-l-r,hh=h-t-b;
+ const ymax=Math.max(1,maximum*1.14);const x=i=>l+i*ww/11,y=v=>t+hh-Math.max(0,v)/ymax*hh;
+ const color=['#62e3ac','#79b6ff','#ff9a9e'];let out='';
+ for(let j=0;j<=4;j++){const v=j*ymax/4;out+=`<line x1="${l}" y1="${y(v)}" x2="${w-r}" y2="${y(v)}" stroke="#34455d"/><text x="${l-9}" y="${y(v)+4}" fill="#b7c7d9" text-anchor="end" font-size="11">${Math.round(v).toLocaleString('pl-PL')}</text>`;}
+ monthNames.forEach((m,i)=>out+=`<text x="${x(i)}" y="${h-14}" text-anchor="middle" font-size="11" fill="#b9c8da">${m}</text>`);
+ if(threshold!==null){out+=`<line x1="${l}" y1="${y(threshold)}" x2="${w-r}" y2="${y(threshold)}" stroke="#ffd386" stroke-width="2" stroke-dasharray="6 5"/><text x="${w-r-4}" y="${y(threshold)-7}" text-anchor="end" font-size="12" fill="#ffd386">Próg: ${zl(threshold)}</text>`;}
+ series.forEach((vals,n)=>{const points=vals.map((v,i)=>`${x(i)},${y(v)}`).join(' ');out+=`<polyline fill="none" stroke="${color[n]}" stroke-width="3" points="${points}"/>`;vals.forEach((v,i)=>out+=`<circle cx="${x(i)}" cy="${y(v)}" r="3" fill="${color[n]}"><title>${monthNames[i]}: ${zl(v)}</title></circle>`)});
+ svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.innerHTML=out;
+}
+function renderYoungCharts(months){
+ youngChart('youngIncomeChart',[months.map(m=>m.cumGross)],Math.max(YOUNG_PIT0,...months.map(m=>m.cumGross)),YOUNG_PIT0);
+ youngChart('youngNetChart',[months.map(m=>m.netTransfer),months.map(m=>m.withheld)],Math.max(1,...months.map(m=>m.netTransfer),...months.map(m=>m.withheld)),null);
+ const cross=months.findIndex(m=>m.cumGross>YOUNG_PIT0),tax=months.findIndex(m=>m.withheld>0);
+ const firstTaxable=months.findIndex(m=>m.cumTaxable>0);
+ el('youngThresholdInfo').innerHTML=`<strong>${cross>=0?'Limit PIT-0 przekroczony: '+monthNames[cross]:'Limit PIT-0 nie został przekroczony'}</strong><div>${firstTaxable>=0?'Dochód opodatkowany pojawia się od: '+monthNames[firstTaxable]+'. ':'Brak dochodu opodatkowanego ponad ulgę. '}${tax>=0?'Pierwsza pobrana zaliczka PIT: '+monthNames[tax]+' ('+zl(months[tax].withheld)+').':'W żadnym miesiącu model nie nalicza zaliczki PIT.'}</div><div class="limit-state">Przychód narastający: ${zl(months[11].cumGross)}; wykorzystane PIT-0: ${zl(months[11].cumExempt)}. Po przekroczeniu PIT-0 zaliczka nie musi wystąpić w tym samym miesiącu, np. z uwagi na PIT-2.</div>`;
+}
 function youngCalc(redrawRows=true){
  const r=youngCompute(true),without=youngCompute(false);
  const {contract,student,annualGross,exemptUsed,annualOtGross,annualTaxBase,annualWithheld,annualTransfers,months,pit,net,birthday}=r;
- if(redrawRows){
-  el('youngRows').innerHTML=months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td><input type="number" min="0" step="1" data-young-month="${i}" value="${youngHours[i]}" aria-label="Zwykłe godziny ${monthNames[i]}"></td><td>${youngSat[i]} / ${youngHalf[i]} h</td><td>${zl(m.gross)}</td><td>${zl(m.social+m.health)}</td><td>${zl(m.netTransfer)}</td></tr>`).join('');
- }else{
-  const trs=el('youngRows').querySelectorAll('tr');months.forEach((m,i)=>{if(trs[i]){const td=trs[i].querySelectorAll('td');td[2].textContent=youngSat[i]+' / '+youngHalf[i]+' h';td[3].textContent=zl(m.gross);td[4].textContent=zl(m.social+m.health);td[5].textContent=zl(m.netTransfer)}});
- }
+ const fmtRow=(m,i)=>{const cross=m.cumGross>YOUNG_PIT0&&m.cumGross-m.gross<=YOUNG_PIT0;const status=m.withheld>0?'PIT potrącony':cross?'Przekroczono PIT-0':m.cumGross>YOUNG_PIT0?'Po limicie PIT-0':'W ramach PIT-0';const color=m.withheld>0?'y-tax':m.cumGross>YOUNG_PIT0?'y-warn':'y-ok';return `<tr class="${cross?'y-cross':m.withheld>0?'y-tax-row':''}"><td>${monthNames[i]}</td><td><input type="number" min="0" step="1" data-young-month="${i}" value="${youngHours[i]}" aria-label="Zwykłe godziny ${monthNames[i]}"></td><td>${youngSat[i]} / ${youngHalf[i]} h</td><td>${zl(m.gross)}</td><td>${zl(m.cumGross)}</td><td>${zl(m.cumExempt)}</td><td>${zl(m.cumTaxable)}</td><td class="${m.withheld>0?'y-tax':''}">${zl(m.withheld)}</td><td>${zl(m.netTransfer)}</td><td class="y-bracket ${color}">${status}</td></tr>`};
+ if(redrawRows){el('youngRows').innerHTML=months.map(fmtRow).join('');}
+ else {const trs=el('youngRows').querySelectorAll('tr');months.forEach((m,i)=>{if(!trs[i])return;const row=document.createElement('tbody');row.innerHTML=fmtRow(m,i);const next=row.firstElementChild;const cells=trs[i].querySelectorAll('td');const fresh=next.querySelectorAll('td');for(let j=2;j<cells.length;j++)cells[j].innerHTML=fresh[j].innerHTML;trs[i].className=next.className;});}
+ renderYoungCharts(months);
  el('youngGross').textContent=zl(annualGross);
  el('youngOvertimeGross').textContent=zl(annualOtGross);
  el('youngOvertimeNet').textContent=zl(net-without.net);
  el('youngNet').textContent=zl(net);
  el('youngTransfers').textContent=zl(annualTransfers);
  el('youngAverage').textContent=zl(net/12);
- el('youngUsed').textContent=zl(exemptUsed)+' / 85 528 zł';
- el('youngLeft').textContent=zl(Math.max(0,85528-exemptUsed));
+ el('youngUsed').textContent=zl(exemptUsed)+' / '+zl(YOUNG_PIT0);
+ el('youngLeft').textContent=zl(Math.max(0,YOUNG_PIT0-exemptUsed));
  el('youngPit').textContent=zl(pit);
  el('youngWithheld').textContent=zl(annualWithheld);
  el('youngSettlement').textContent=(annualWithheld>=pit?'Zwrot ':'Dopłata ')+zl(Math.abs(annualWithheld-pit));
@@ -393,19 +414,26 @@ function youngCalc(redrawRows=true){
  // według skali w kwocie po kosztach i odliczonych składkach społecznych.
  const parentCounted=exemptUsed+annualTaxBase+yVal('youngParentOther');
  const parentLimit=yVal('youngParentLimit');
+ const countedByMonth=months.map(m=>m.cumExempt+m.cumTaxable);
+ youngChart('youngParentChart',[countedByMonth],Math.max(1,parentLimit,...countedByMonth),parentLimit>0?parentLimit:null);
+ const parentCross=parentLimit>0?countedByMonth.findIndex(x=>x>parentLimit):-1;
+ const yr=Math.round(yVal('youngYear'));
+ const official=OFFICIAL_PARENT_LIMITS[yr];
+ const auto=el('youngParentAuto').checked;
+ const hasParentLimit=parentLimit>0;
  el('youngParentCounted').textContent=zl(parentCounted);
- el('youngParentMax').textContent=zl(parentLimit);
- el('youngParentRemaining').textContent=zl(Math.max(0,parentLimit-parentCounted));
+ el('youngParentMax').textContent=hasParentLimit?zl(parentLimit):'Nieustalony';
+ if(parentCross>=0)el('youngThresholdInfo').innerHTML+=`<div class="y-tax">Limit dochodów dziecka przekroczony już w ${monthNames[parentCross]} (bez dodatkowych przychodów wpisanych zbiorczo).</div>`;
+ el('youngParentRemaining').textContent=hasParentLimit?zl(Math.max(0,parentLimit-parentCounted)):'—';
  const pWarn=el('youngParentWarning');
- pWarn.textContent=!student?'Limit dla uczącego się pełnoletniego dziecka dotyczy określonych sytuacji. Zaznacz status ucznia/studenta tylko, gdy faktycznie go masz.':parentCounted>parentLimit?'UWAGA: przekroczony orientacyjny limit dochodów dziecka. Rodzic może utracić ulgę prorodzinną na to dziecko oraz ulgę 4+, jeżeli jest ono czwartym dzieckiem uprawniającym.':parentCounted>=parentLimit*.9?'Uwaga: zbliżasz się do limitu przychodów/dochodu dziecka, który może decydować o ulgach rodzica.':'Dochody mieszczą się w wybranym limicie (pod warunkiem spełnienia pozostałych wymagań).';
- pWarn.style.color=parentCounted>parentLimit?'#ff9d9d':parentCounted>=parentLimit*.9?'#ffd58e':'#80e3bb';
- el('youngParentLimitSource').textContent=(Math.round(yVal('youngYear'))===2025?'2025: oficjalny limit 22 546,92 zł.':Math.round(yVal('youngYear'))===2026?'2026: oficjalny limit 23 741,88 zł.':Math.round(yVal('youngYear'))===2027?'2027: 25 000 zł to prognoza, oficjalną kwotę trzeba zaktualizować.':'Sprawdź oficjalną kwotę dla wybranego roku.')+' Wartość edytowalna.';
-
+ pWarn.textContent=!hasParentLimit?'Brak potwierdzonego limitu dla wybranego roku. Nie można ocenić prawa rodzica do ulg; sprawdź oficjalny limit przed deklaracją.':!student?'Limit dla pełnoletniego uczącego się dziecka dotyczy określonych sytuacji — sprawdź status nauki.':parentCounted>parentLimit?'UWAGA: przekroczony limit dochodów dziecka. Rodzic może utracić ulgę na to dziecko oraz ulgę 4+, jeżeli jest ono niezbędne do wykazania czworga dzieci.':parentCounted>=parentLimit*.9?'Uwaga: wykorzystano co najmniej 90% limitu dziecka.':'Dochody mieszczą się w przyjętym limicie (pozostałe warunki wymagają sprawdzenia).';
+ pWarn.style.color=!hasParentLimit||parentCounted>parentLimit?'#ff9d9d':parentCounted>=parentLimit*.9?'#ffd58e':'#80e3bb';
+ el('youngParentLimitSource').textContent=official!==undefined?`${yr}: zweryfikowany limit ${zl(official)} · źródło: ${PARENT_LIMIT_SOURCES[yr]||"podatki.gov.pl"}.`:(auto?'Nie ma potwierdzonej wartości dla '+yr+'. Nie stosuję prognozy jako oficjalnego limitu.':'Limit wprowadzony ręcznie — samodzielnie sprawdź jego poprawność.');
  let note=contract==='zlecenie'&&student?'Uczeń/student przed 26. urodzinami na zwykłym zleceniu z innym podmiotem niż własny pracodawca: co do zasady bez ZUS i składki zdrowotnej, a PIT-0 do limitu 85 528 zł.':contract==='etat'?'Etat: ulga dla młodych zwalnia z PIT, ale składki ZUS i zdrowotna nadal są potrącane.':'Zlecenie bez statusu ucznia/studenta: oszacowano typowe składki, ale rzeczywiste ubezpieczenia zależą od innych tytułów i warunków umowy.';
  if(birthday)note+=' Ulgę stosujemy orientacyjnie według daty wypłaty przyjętej na koniec miesiąca; rzeczywista granica zależy od daty otrzymania wypłaty.';
  el('youngContractNote').textContent=note;
  el('youngOvertimeNote').textContent=contract==='etat'?'Etat: stawka godzinowa z pensji miesięcznej / nominalne godziny; 100% = 2 × stawka (soboty po 8 h), 50% = 1,5 × stawka. To symulacja dla nadgodzin rozliczanych dodatkiem, bez dnia wolnego.': 'Zlecenie: przepisy o dodatkach za nadgodziny pracownicze nie stosują się automatycznie. Kwoty 100% (2×) i 50% (1,5×) to scenariusz WYŁĄCZNIE gdy takie stawki wynikają z umowy zlecenia.';
- el('youngWarning').textContent=annualGross>85528?'Przekroczono 85 528 zł zwolnienia. Od nadwyżki płatnik może pobierać zaliczki, dlatego przelewy w kolejnych miesiącach spadają. Roczny PIT może nadal wynosić 0 zł dzięki kwocie wolnej 30 000 zł; ewentualne nadpłacone zaliczki podlegają rozliczeniu.':(exemptUsed>75000?'Zbliżasz się do limitu PIT-0 85 528 zł.':'PIT-0 nie oznacza automatycznego zwolnienia ze składek na etacie.');
+ el('youngWarning').textContent=annualGross>YOUNG_PIT0?'Przekroczono limit ulgi dla młodych. Od nadwyżki płatnik może pobierać zaliczki, dlatego przelewy w kolejnych miesiącach spadają. Roczny PIT może nadal wynosić 0 zł dzięki kwocie wolnej 30 000 zł; ewentualne nadpłacone zaliczki podlegają rozliczeniu.':(exemptUsed>75000?'Zbliżasz się do limitu PIT-0 85 528 zł.':'PIT-0 nie oznacza automatycznego zwolnienia ze składek na etacie.');
  el('youngSalary').disabled=contract!=='etat';
  el('youngSickness').disabled=contract==='etat'||student;
  drawYoungOvertime();
@@ -420,12 +448,38 @@ function changeProfile(mode){
 el('tabAdult').addEventListener('click',()=>changeProfile('adult'));
 el('tabYoung').addEventListener('click',()=>changeProfile('young'));
 for(const id of yInputIds){el(id).addEventListener('input',()=>{youngCalc();saveState()});el(id).addEventListener('change',()=>{youngCalc();saveState()})}
-el('youngYear').addEventListener('change',()=>{
+const OFFICIAL_PARENT_LIMITS={2025:22546.92,2026:23741.88};
+const PARENT_LIMIT_SOURCES={2025:'https://www.podatki.gov.pl/media/z5abnlba/pit-o-broszura-za-2025-r.pdf',2026:'https://podatki.gov.pl/ulgi-i-odliczenia/ulga-na-dziecko-pit'};
+const OFFICIAL_PIT0=85528;
+function applyYoungLimits(){
  const yr=Math.round(yVal('youngYear'));
- const values={2025:22546.92,2026:23741.88,2027:25000};
- if(values[yr]!==undefined)el('youngParentLimit').value=String(values[yr]);
+ if(el('youngParentAuto').checked){el('youngParentLimit').value=String(OFFICIAL_PARENT_LIMITS[yr]??0);el('youngParentLimit').disabled=true;}
+ else el('youngParentLimit').disabled=false;
  youngCalc();saveState();
-});
+}
+// Do uaktualnienia danych na GitHub Pages: limits.json może być publikowany przez
+// cykliczny workflow, ale wartości z pliku muszą mieć status official i źródło MF.
+async function loadPublicLimits(){
+ const status=el('youngLimitSync');
+ try{
+  // GitHub Pages serves this local JSON, refreshed by scheduled GitHub Actions from ministry sources.
+  const response=await fetch('./limits.json',{cache:'no-store'});
+  if(!response.ok)throw new Error('Brak pliku limits.json');
+  const data=await response.json();if(!data||!Array.isArray(data.parent_limits))throw new Error('Brak danych');
+  if(data.pit0_young?.status==='official' && /^https:\/\/(www\.)?podatki\.gov\.pl\//.test(data.pit0_young.source_url||'') && Number(data.pit0_young.value)>0 && Number(data.pit0_young.value)<200000){YOUNG_PIT0=Number(data.pit0_young.value);}
+  let changed=false;
+  for(const record of data.parent_limits){
+   if(record.status!=='official'||record.source_domain!=='podatki.gov.pl'||!/^https:\/\/(www\.)?podatki\.gov\.pl\//.test(record.source_url||''))continue;
+   const yr=Number(record.year),value=Number(record.value);
+   if(Number.isInteger(yr)&&yr>=2020&&yr<=2040&&Number.isFinite(value)&&value>0&&value<100000){OFFICIAL_PARENT_LIMITS[yr]=value;PARENT_LIMIT_SOURCES[yr]=record.source_url;changed=true;}
+  }
+  status.textContent=`Dane online: ${data.checked_at||'data niepodana'} · źródła: podatki.gov.pl. Brak oficjalnego limitu na dany rok = brak automatycznej kwoty.`;
+  if(changed)applyYoungLimits();
+ }catch(e){status.textContent='Nie pobrano aktualizacji internetowej. Korzystam tylko ze znanych, zweryfikowanych limitów 2025–2026. Dla innych lat wpisz limit ręcznie po sprawdzeniu urzędowej publikacji.';}
+}
+el('youngYear').addEventListener('change',applyYoungLimits);
+el('youngParentAuto').addEventListener('change',applyYoungLimits);
+el('youngParentLimit').addEventListener('input',()=>{if(!el('youngParentAuto').checked){youngCalc();saveState()}});
 el('youngOvertimeMonths').addEventListener('click',e=>{
  const b=e.target.closest('button[data-young-counter]');if(!b)return;
  const i=Number(b.dataset.i),d=Number(b.dataset.d),arr=b.dataset.youngCounter==='sat'?youngSat:youngHalf;
@@ -448,12 +502,12 @@ el('youngRows').addEventListener('change',()=>{youngCalc(false);saveState()});
 
 // Dane z trybu młodego dołączone do istniejącej kopii zapasowej, bez publikowania w repozytorium.
 const baseSnapshot=snapshot;
-snapshot=function(){const v=baseSnapshot();v.youngHours=[...youngHours];v.youngSat=[...youngSat];v.youngHalf=[...youngHalf];v.profileMode=el('tabYoung').getAttribute('aria-selected')==='true'?'young':'adult';v.version=30;return v};
+snapshot=function(){const v=baseSnapshot();v.youngHours=[...youngHours];v.youngSat=[...youngSat];v.youngHalf=[...youngHalf];v.profileMode=el('tabYoung').getAttribute('aria-selected')==='true'?'young':'adult';v.version=31;return v};
 const baseApplySnapshot=applySnapshot;
 applySnapshot=function(data){baseApplySnapshot(data);youngHours=Array.isArray(data.youngHours)?data.youngHours.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngHours.length<12)youngHours.push(0);youngSat=Array.isArray(data.youngSat)?data.youngSat.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);youngHalf=Array.isArray(data.youngHalf)?data.youngHalf.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngSat.length<12)youngSat.push(0);while(youngHalf.length<12)youngHalf.push(0);youngCalc();changeProfile(data.profileMode==='young'?'young':'adult')};
 // Dotychczasowe uruchomienie programu już odczytało stare dane; po migracji pobierz istniejące godziny z aktualnego klucza.
 try{const persisted=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(persisted){youngHours=Array.isArray(persisted.youngHours)?persisted.youngHours.slice(0,12):Array(12).fill(0);youngSat=Array.isArray(persisted.youngSat)?persisted.youngSat.slice(0,12):Array(12).fill(0);youngHalf=Array.isArray(persisted.youngHalf)?persisted.youngHalf.slice(0,12):Array(12).fill(0);changeProfile(persisted.profileMode==='young'?'young':'adult')}}catch(e){}
 try{if(!localStorage.getItem(STORAGE_KEY))changeProfile(localStorage.getItem('kalkulator_pit_v28_profile')==='young'?'young':'adult')}catch(e){}
-youngCalc();
+applyYoungLimits();loadPublicLimits();
 renderMonths();setIkzeYearLimit();fetchIkzeLimits();render();})();
 </script></body></html>
