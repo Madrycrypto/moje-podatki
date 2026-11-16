@@ -92,7 +92,7 @@ button.preset:focus-visible,.counter button:focus-visible{outline:3px solid var(
 <div class="field"><label for="youngYear">Rok rozliczenia</label><input id="youngYear" min="2020" max="2040" step="1" type="number" value="2027"/></div>
 <div class="field"><label for="youngBirthday">Data 26. urodzin (opcjonalnie)</label><input id="youngBirthday" type="date"/><small class="hint">Bez daty zakładamy, że masz mniej niż 26 lat przez cały wybrany rok.</small></div>
 <div class="field"><label for="youngSickness">Dobrowolne chorobowe (zlecenie nie-studenckie)</label><select id="youngSickness"><option value="no">Nie</option><option value="yes">Tak — 2,45%</option></select></div>
-<div class="field"><label for="youngScheme">Skala dla przychodów powyżej ulgi</label><select id="youngScheme"><option value="old">12% / 32% — obecna</option><option value="new">12% / 24% / 32% — wariant projektu</option></select></div>
+<div class="field"><label for="youngPit2">Kwota zmniejszająca miesięczną zaliczkę (PIT-2)</label><select id="youngPit2"><option value="0">0 zł — bez PIT-2 u płatnika</option><option value="300">300 zł — PIT-2 u tego płatnika</option></select><small class="hint">Wpływa na miesięczny przelew, nie na należny PIT roczny. Nie korzystaj równocześnie z pełnych 300 zł u kilku płatników.</small></div><div class="field"><label for="youngScheme">Skala dla przychodów powyżej ulgi</label><select id="youngScheme"><option value="old">12% / 32% — obecna</option><option value="new">12% / 24% / 32% — wariant projektu</option></select></div>
 </div><p id="youngContractNote" class="y-help" aria-live="polite"></p></div>
 <div class="card"><h2>Godziny podstawowe i nadgodziny</h2>
 <p class="hint">Wpisz zwykłe godziny w tabeli poniżej. Przy stałej pensji etatowej wynagrodzenie zasadnicze pochodzi z pola „Stała pensja brutto”. Nadgodziny doliczane są osobno.</p>
@@ -102,9 +102,22 @@ button.preset:focus-visible,.counter button:focus-visible{outline:3px solid var(
 <div class="young-ot-presets"><span>Ustaw we wszystkich miesiącach:</span><button type="button" data-young-preset="half" data-num="0">0</button><button type="button" data-young-preset="half" data-num="1">1</button><button type="button" data-young-preset="half" data-num="2">2</button><button type="button" data-young-preset="half" data-num="3">3</button><button type="button" data-young-preset="half" data-num="4">4</button></div>
 <p id="youngOvertimeNote" class="hint">Na etacie: 100% to normalna stawka + 100% dodatku, a 50% to stawka + 50% dodatku. Na zleceniu takie dodatki obowiązują tylko po uzgodnieniu w umowie — tutaj jest to symulacja przy wybranych mnożnikach.</p>
 <div class="young-ot-grid" id="youngOvertimeMonths"></div>
-<h3>Rozliczenie miesięczne</h3><div style="overflow-x:auto"><table class="young-table"><thead><tr><th>Miesiąc</th><th>Zwykłe godziny</th><th>100% / 50%</th><th>Brutto razem</th><th>Składki ZUS + zdrowotna</th><th>Netto przed rocznym PIT</th></tr></thead><tbody id="youngRows"></tbody></table></div></div>
-<div class="card"><h2>Twoje podsumowanie roczne</h2><div class="young-summary">
-<div class="metric"><small>Przychód brutto za rok</small><strong id="youngGross">0 zł</strong></div><div class="metric"><small>Brutto z nadgodzin za rok</small><strong id="youngOvertimeGross">0 zł</strong></div><div class="metric"><small>Netto dodatkowo z nadgodzin po PIT</small><strong id="youngOvertimeNet">0 zł</strong></div><div class="metric"><small>Netto po rocznym PIT</small><strong id="youngNet">0 zł</strong></div><div class="metric"><small>Średnio netto / miesiąc</small><strong id="youngAverage">0 zł</strong></div><div class="metric"><small>Wykorzystanie ulgi dla młodych</small><strong id="youngUsed">0 / 85 528 zł</strong></div><div class="metric"><small>Pozostało do limitu PIT-0</small><strong id="youngLeft">85 528 zł</strong></div><div class="metric"><small>Roczny PIT (szacunek)</small><strong id="youngPit">0 zł</strong></div></div>
+<h3>Rozliczenie miesięczne</h3><div style="overflow-x:auto"><table class="young-table"><thead><tr><th>Miesiąc</th><th>Zwykłe godziny</th><th>100% / 50%</th><th>Brutto razem</th><th>Składki ZUS + zdrowotna</th><th>Na konto (po zaliczce PIT)</th></tr></thead><tbody id="youngRows"></tbody></table></div></div>
+<div class="card" id="youngParentCard"><h2>Limit zarobków studenta — ulgi rodziców</h2>
+<p class="y-help">To <b>oddzielny limit</b> od PIT-0 85 528 zł. Dotyczy pełnoletniego uczącego się dziecka do ukończenia 25 lat, przy spełnieniu pozostałych warunków ulgi prorodzinnej i rodzin 4+. W przypadku innych dzieci lub dodatkowych źródeł dochodu trzeba zweryfikować cały stan faktyczny.</p>
+<div class="field-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:14px 0">
+<div class="field"><label for="youngParentLimit">Roczny limit dochodów dla ulg rodzica (zł)</label><input id="youngParentLimit" type="number" min="0" step="0.01" value="25000"/><small id="youngParentLimitSource" class="hint">2027: 25 000 zł to szacunek, nie urzędowy limit.</small></div>
+<div class="field"><label for="youngParentOther">Inne dochody/przychody liczone do limitu (zł)</label><input id="youngParentOther" type="number" min="0" step="0.01" value="0"/><small class="hint">Wpisz dodatkowe kwoty podlegające wliczeniu, nieuwzględnione w tym kalkulatorze.</small></div>
+</div>
+<div class="young-summary">
+<div class="metric"><small>Kwota uwzględniana do limitu rodziców</small><strong id="youngParentCounted">0 zł</strong></div>
+<div class="metric"><small>Limit dla wybranego roku</small><strong id="youngParentMax">25 000 zł</strong></div>
+<div class="metric"><small>Pozostało do limitu</small><strong id="youngParentRemaining">25 000 zł</strong></div>
+</div>
+<p id="youngParentWarning" class="y-help" aria-live="polite"></p>
+</div>
+<div class="card"><h2>Twoje podsumowanie roczne — przelewy i PIT</h2><div class="young-summary">
+<div class="metric"><small>Przychód brutto za rok</small><strong id="youngGross">0 zł</strong></div><div class="metric"><small>Brutto z nadgodzin za rok</small><strong id="youngOvertimeGross">0 zł</strong></div><div class="metric"><small>Netto dodatkowo z nadgodzin po PIT</small><strong id="youngOvertimeNet">0 zł</strong></div><div class="metric"><small>Łącznie na konto w trakcie roku</small><strong id="youngTransfers">0 zł</strong></div><div class="metric"><small>Netto po rocznym PIT</small><strong id="youngNet">0 zł</strong></div><div class="metric"><small>Średnio netto / miesiąc</small><strong id="youngAverage">0 zł</strong></div><div class="metric"><small>Wykorzystanie ulgi dla młodych</small><strong id="youngUsed">0 / 85 528 zł</strong></div><div class="metric"><small>Pozostało do limitu PIT-0</small><strong id="youngLeft">85 528 zł</strong></div><div class="metric"><small>Roczny PIT (szacunek)</small><strong id="youngPit">0 zł</strong></div><div class="metric"><small>Łącznie zaliczki pobrane w roku</small><strong id="youngWithheld">0 zł</strong></div><div class="metric"><small>Zwrot/dopłata PIT po roku</small><strong id="youngSettlement">0 zł</strong></div><div class="metric"><small>Opodatkowany dochód ponad PIT-0</small><strong id="youngTaxable">0 zł</strong></div></div>
 <p id="youngWarning" class="y-help" aria-live="polite"></p><p class="hint">Ulga dla młodych obejmuje kwalifikujące się przychody do 85 528 zł rocznie. To <b>nie jest</b> limit zarobków pełnoletniego dziecka istotny dla ulgi 4+ rodzica. Kwoty podatkowe są prognozą, a nie paskiem płacowym. Przy pracy osoby poniżej 18 lat obowiązują dodatkowe ograniczenia prawa pracy.</p></div>
 </section>
 <div id="adultWorkspace"><div class="ui-legend" role="note"><b>Jak korzystać?</b><span class="ui-legend-item"><span aria-hidden="true" class="ui-swatch"></span> Zielono-morskie pola — wpisujesz lub wybierasz</span><span class="ui-legend-item"><span aria-hidden="true" class="ui-swatch output"></span> Ciemne pola — wynik obliczony automatycznie</span><span class="ui-legend-note">Zmiany przeliczają wyniki na bieżąco.</span></div><div aria-hidden="true" hidden="" id="legacyResultBindings"><section class="grid" id="monthlySplit"><div class="metric"><small>Wybrany miesiąc</small><select id="viewMonth" style="margin-top:4px"><option value="0">Styczeń</option><option value="1">Luty</option><option value="2">Marzec</option><option value="3">Kwiecień</option><option value="4">Maj</option><option value="5">Czerwiec</option><option value="6">Lipiec</option><option value="7">Sierpień</option><option value="8">Wrzesień</option><option value="9">Październik</option><option value="10">Listopad</option><option value="11">Grudzień</option></select></div><div class="metric"><small>Etat na konto (bez umowy o dzieło)</small><strong id="etNet">–</strong></div><div class="metric"><small>Umowa o dzieło na konto</small><strong id="dzieNet">–</strong></div><div class="metric"><small>Łącznie na konto w miesiącu</small><strong id="bothNet">–</strong></div></section><section class="grid" id="metrics"><div class="metric"><small>Nadgodziny 100% / 50% (h)</small><strong id="m_count">–</strong></div><div class="metric"><small>Dodatkowe netto po rocznym PIT</small><strong class="green" id="m_extra">–</strong></div><div class="metric"><small>Średnio netto za sobotę 8 h (100%)</small><strong id="m_avg">–</strong></div><div class="metric"><small>Średnio netto za 1 godzinę 50%</small><strong id="m_avg50">–</strong></div><div class="metric"><small>Rozliczenie roczne PIT (zwrot / dopłata)</small><strong id="m_settle">–</strong></div></section></div><p class="hint">Wprowadź dane poniżej. Wyniki miesięczne, roczne i wykresy znajdziesz po formularzu — bez powielania tych samych podsumowań na początku strony.</p>
@@ -301,7 +314,7 @@ el('ikzeAuto').addEventListener('change',()=>{setIkzeYearLimit();saveState()});
 let youngHours=Array(12).fill(0);
 let youngSat=Array(12).fill(0);
 let youngHalf=Array(12).fill(0);
-const yInputIds=['youngContract','youngStudent','youngRate','youngSalary','youngYear','youngBirthday','youngSickness','youngScheme'];
+const yInputIds=['youngContract','youngStudent','youngRate','youngSalary','youngYear','youngBirthday','youngSickness','youngScheme','youngPit2','youngParentLimit','youngParentOther'];
 const yVal=id=>Math.max(0,Number(el(id).value)||0);
 function youngOtFigures(i){
  const contract=el('youngContract').value,year=Math.round(yVal('youngYear'))||2027;
@@ -324,9 +337,9 @@ function drawYoungOvertime(){
 function youngCompute(includeOvertime=true){
  const contract=el('youngContract').value,student=el('youngStudent').value==='yes';
  const rate=yVal('youngRate'),fixed=yVal('youngSalary'),year=Math.round(yVal('youngYear'))||2027;
- const bday=el('youngBirthday').value;
- const birthday=bday?new Date(bday+'T12:00:00'):null;
- let annualGross=0,annualSocial=0,annualHealth=0,annualTaxBase=0,exemptUsed=0,annualOtGross=0;
+ const bday=el('youngBirthday').value,birthday=bday?new Date(bday+'T12:00:00'):null;
+ const scheme=el('youngScheme').value,pit2=yVal('youngPit2');
+ let annualGross=0,annualSocial=0,annualHealth=0,annualTaxBase=0,exemptUsed=0,annualOtGross=0,annualWithheld=0;
  const months=[];
  for(let i=0;i<12;i++){
   const baseGross=contract==='etat'&&fixed>0?fixed:rate*youngHours[i];
@@ -335,42 +348,64 @@ function youngCompute(includeOvertime=true){
   const noContrib=contract==='zlecenie'&&student;
   const socRate=contract==='etat'?0.1371:(noContrib?0:(el('youngSickness').value==='yes'?0.1371:0.1126));
   const social=gross*socRate,health=noContrib?0:(gross-social)*.09;
-  const payDate=new Date(year,i+1,0,12);
-  const youngEligible=!birthday||payDate<birthday;
+  const payDate=new Date(year,i+1,0,12),youngEligible=!birthday||payDate<birthday;
   const exempt=youngEligible?Math.min(gross,Math.max(0,85528-exemptUsed)):0;
   exemptUsed+=exempt;
   const taxablePart=Math.max(0,gross-exempt);
   const deductibleSocial=gross>0?social*taxablePart/gross:0;
   const cost=taxablePart>0?(contract==='etat'?Math.min(250,taxablePart):Math.max(0,(taxablePart-deductibleSocial)*.2)):0;
   const taxable=Math.max(0,taxablePart-deductibleSocial-cost);
-  annualTaxBase+=taxable;annualGross+=gross;annualSocial+=social;annualHealth+=health;
-  months.push({baseGross,ot,gross,social,health,netBeforePit:gross-social-health});
+  const before=annualTaxBase;annualTaxBase+=taxable;
+  // Zaliczka płatnika: podstawa narastająca bez uwzględniania rocznej kwoty wolnej,
+  // pomniejszona o miesięczną kwotę PIT-2 (jeśli zadeklarowano).
+  const monthTax=Math.max(0,bracket(annualTaxBase,scheme)-bracket(before,scheme)-pit2);
+  const withheld=Math.round(monthTax);annualWithheld+=withheld;
+  annualGross+=gross;annualSocial+=social;annualHealth+=health;
+  months.push({baseGross,ot,gross,social,health,taxable,exempt,withheld,netBeforePit:gross-social-health,netTransfer:gross-social-health-withheld});
  }
- const scheme=el('youngScheme').value;
- const pit=Math.max(0,bracket(annualTaxBase,scheme)-3600);
- return {contract,student,annualGross,annualSocial,annualHealth,annualTaxBase,exemptUsed,annualOtGross,months,pit,net:annualGross-annualSocial-annualHealth-pit,birthday};
+ // Po odjęciu ulgi PIT-0 zastosowanie ma również 30 tys. zł kwoty wolnej.
+ const pit=Math.max(0,Math.round(bracket(annualTaxBase,scheme)-3600));
+ return {contract,student,annualGross,annualSocial,annualHealth,annualTaxBase,exemptUsed,annualOtGross,months,pit,annualWithheld,
+ annualTransfers:annualGross-annualSocial-annualHealth-annualWithheld,
+ net:annualGross-annualSocial-annualHealth-pit,birthday};
 }
 function youngCalc(redrawRows=true){
  const r=youngCompute(true),without=youngCompute(false);
- const {contract,student,annualGross,exemptUsed,annualOtGross,months,pit,net,birthday}=r;
+ const {contract,student,annualGross,exemptUsed,annualOtGross,annualTaxBase,annualWithheld,annualTransfers,months,pit,net,birthday}=r;
  if(redrawRows){
-  el('youngRows').innerHTML=months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td><input type="number" min="0" step="1" data-young-month="${i}" value="${youngHours[i]}" aria-label="Zwykłe godziny ${monthNames[i]}"></td><td>${youngSat[i]} / ${youngHalf[i]} h</td><td>${zl(m.gross)}</td><td>${zl(m.social+m.health)}</td><td>${zl(m.netBeforePit)}</td></tr>`).join('');
+  el('youngRows').innerHTML=months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td><input type="number" min="0" step="1" data-young-month="${i}" value="${youngHours[i]}" aria-label="Zwykłe godziny ${monthNames[i]}"></td><td>${youngSat[i]} / ${youngHalf[i]} h</td><td>${zl(m.gross)}</td><td>${zl(m.social+m.health)}</td><td>${zl(m.netTransfer)}</td></tr>`).join('');
  }else{
-  const trs=el('youngRows').querySelectorAll('tr');months.forEach((m,i)=>{if(trs[i]){const td=trs[i].querySelectorAll('td');td[2].textContent=youngSat[i]+' / '+youngHalf[i]+' h';td[3].textContent=zl(m.gross);td[4].textContent=zl(m.social+m.health);td[5].textContent=zl(m.netBeforePit)}});
+  const trs=el('youngRows').querySelectorAll('tr');months.forEach((m,i)=>{if(trs[i]){const td=trs[i].querySelectorAll('td');td[2].textContent=youngSat[i]+' / '+youngHalf[i]+' h';td[3].textContent=zl(m.gross);td[4].textContent=zl(m.social+m.health);td[5].textContent=zl(m.netTransfer)}});
  }
  el('youngGross').textContent=zl(annualGross);
  el('youngOvertimeGross').textContent=zl(annualOtGross);
  el('youngOvertimeNet').textContent=zl(net-without.net);
  el('youngNet').textContent=zl(net);
+ el('youngTransfers').textContent=zl(annualTransfers);
  el('youngAverage').textContent=zl(net/12);
  el('youngUsed').textContent=zl(exemptUsed)+' / 85 528 zł';
  el('youngLeft').textContent=zl(Math.max(0,85528-exemptUsed));
  el('youngPit').textContent=zl(pit);
+ el('youngWithheld').textContent=zl(annualWithheld);
+ el('youngSettlement').textContent=(annualWithheld>=pit?'Zwrot ':'Dopłata ')+zl(Math.abs(annualWithheld-pit));
+ el('youngTaxable').textContent=zl(annualTaxBase);
+ // Limit rodziców: przychody PIT-0 liczymy kwotą brutto; dochód opodatkowany
+ // według skali w kwocie po kosztach i odliczonych składkach społecznych.
+ const parentCounted=exemptUsed+annualTaxBase+yVal('youngParentOther');
+ const parentLimit=yVal('youngParentLimit');
+ el('youngParentCounted').textContent=zl(parentCounted);
+ el('youngParentMax').textContent=zl(parentLimit);
+ el('youngParentRemaining').textContent=zl(Math.max(0,parentLimit-parentCounted));
+ const pWarn=el('youngParentWarning');
+ pWarn.textContent=!student?'Limit dla uczącego się pełnoletniego dziecka dotyczy określonych sytuacji. Zaznacz status ucznia/studenta tylko, gdy faktycznie go masz.':parentCounted>parentLimit?'UWAGA: przekroczony orientacyjny limit dochodów dziecka. Rodzic może utracić ulgę prorodzinną na to dziecko oraz ulgę 4+, jeżeli jest ono czwartym dzieckiem uprawniającym.':parentCounted>=parentLimit*.9?'Uwaga: zbliżasz się do limitu przychodów/dochodu dziecka, który może decydować o ulgach rodzica.':'Dochody mieszczą się w wybranym limicie (pod warunkiem spełnienia pozostałych wymagań).';
+ pWarn.style.color=parentCounted>parentLimit?'#ff9d9d':parentCounted>=parentLimit*.9?'#ffd58e':'#80e3bb';
+ el('youngParentLimitSource').textContent=(Math.round(yVal('youngYear'))===2025?'2025: oficjalny limit 22 546,92 zł.':Math.round(yVal('youngYear'))===2026?'2026: oficjalny limit 23 741,88 zł.':Math.round(yVal('youngYear'))===2027?'2027: 25 000 zł to prognoza, oficjalną kwotę trzeba zaktualizować.':'Sprawdź oficjalną kwotę dla wybranego roku.')+' Wartość edytowalna.';
+
  let note=contract==='zlecenie'&&student?'Uczeń/student przed 26. urodzinami na zwykłym zleceniu z innym podmiotem niż własny pracodawca: co do zasady bez ZUS i składki zdrowotnej, a PIT-0 do limitu 85 528 zł.':contract==='etat'?'Etat: ulga dla młodych zwalnia z PIT, ale składki ZUS i zdrowotna nadal są potrącane.':'Zlecenie bez statusu ucznia/studenta: oszacowano typowe składki, ale rzeczywiste ubezpieczenia zależą od innych tytułów i warunków umowy.';
  if(birthday)note+=' Ulgę stosujemy orientacyjnie według daty wypłaty przyjętej na koniec miesiąca; rzeczywista granica zależy od daty otrzymania wypłaty.';
  el('youngContractNote').textContent=note;
  el('youngOvertimeNote').textContent=contract==='etat'?'Etat: stawka godzinowa z pensji miesięcznej / nominalne godziny; 100% = 2 × stawka (soboty po 8 h), 50% = 1,5 × stawka. To symulacja dla nadgodzin rozliczanych dodatkiem, bez dnia wolnego.': 'Zlecenie: przepisy o dodatkach za nadgodziny pracownicze nie stosują się automatycznie. Kwoty 100% (2×) i 50% (1,5×) to scenariusz WYŁĄCZNIE gdy takie stawki wynikają z umowy zlecenia.';
- el('youngWarning').textContent=annualGross>85528?'Przychód przekracza 85 528 zł. Nadwyżka może być opodatkowana; moment opodatkowania zależy od konkretnych wypłat.':(exemptUsed>75000?'Zbliżasz się do limitu ulgi PIT-0 85 528 zł.':'PIT-0 nie oznacza automatycznego zwolnienia ze składek na etacie.');
+ el('youngWarning').textContent=annualGross>85528?'Przekroczono 85 528 zł zwolnienia. Od nadwyżki płatnik może pobierać zaliczki, dlatego przelewy w kolejnych miesiącach spadają. Roczny PIT może nadal wynosić 0 zł dzięki kwocie wolnej 30 000 zł; ewentualne nadpłacone zaliczki podlegają rozliczeniu.':(exemptUsed>75000?'Zbliżasz się do limitu PIT-0 85 528 zł.':'PIT-0 nie oznacza automatycznego zwolnienia ze składek na etacie.');
  el('youngSalary').disabled=contract!=='etat';
  el('youngSickness').disabled=contract==='etat'||student;
  drawYoungOvertime();
@@ -385,6 +420,12 @@ function changeProfile(mode){
 el('tabAdult').addEventListener('click',()=>changeProfile('adult'));
 el('tabYoung').addEventListener('click',()=>changeProfile('young'));
 for(const id of yInputIds){el(id).addEventListener('input',()=>{youngCalc();saveState()});el(id).addEventListener('change',()=>{youngCalc();saveState()})}
+el('youngYear').addEventListener('change',()=>{
+ const yr=Math.round(yVal('youngYear'));
+ const values={2025:22546.92,2026:23741.88,2027:25000};
+ if(values[yr]!==undefined)el('youngParentLimit').value=String(values[yr]);
+ youngCalc();saveState();
+});
 el('youngOvertimeMonths').addEventListener('click',e=>{
  const b=e.target.closest('button[data-young-counter]');if(!b)return;
  const i=Number(b.dataset.i),d=Number(b.dataset.d),arr=b.dataset.youngCounter==='sat'?youngSat:youngHalf;
@@ -407,7 +448,7 @@ el('youngRows').addEventListener('change',()=>{youngCalc(false);saveState()});
 
 // Dane z trybu młodego dołączone do istniejącej kopii zapasowej, bez publikowania w repozytorium.
 const baseSnapshot=snapshot;
-snapshot=function(){const v=baseSnapshot();v.youngHours=[...youngHours];v.youngSat=[...youngSat];v.youngHalf=[...youngHalf];v.profileMode=el('tabYoung').getAttribute('aria-selected')==='true'?'young':'adult';v.version=29;return v};
+snapshot=function(){const v=baseSnapshot();v.youngHours=[...youngHours];v.youngSat=[...youngSat];v.youngHalf=[...youngHalf];v.profileMode=el('tabYoung').getAttribute('aria-selected')==='true'?'young':'adult';v.version=30;return v};
 const baseApplySnapshot=applySnapshot;
 applySnapshot=function(data){baseApplySnapshot(data);youngHours=Array.isArray(data.youngHours)?data.youngHours.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngHours.length<12)youngHours.push(0);youngSat=Array.isArray(data.youngSat)?data.youngSat.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);youngHalf=Array.isArray(data.youngHalf)?data.youngHalf.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngSat.length<12)youngSat.push(0);while(youngHalf.length<12)youngHalf.push(0);youngCalc();changeProfile(data.profileMode==='young'?'young':'adult')};
 // Dotychczasowe uruchomienie programu już odczytało stare dane; po migracji pobierz istniejące godziny z aktualnego klucza.
