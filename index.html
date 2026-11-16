@@ -58,6 +58,20 @@ button.preset:focus-visible,.counter button:focus-visible{outline:3px solid var(
 .profile-tabs{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}
 .profile-tab{font-size:17px;font-weight:800;padding:15px 24px;border:1px solid #547085;border-radius:14px;background:#1b293e;color:#dceaf9;cursor:pointer}
 .profile-tab[aria-selected="true"]{background:#11675b;border-color:#62e3ac;color:white;box-shadow:0 0 0 2px #62e3ac44}
+/* Liczniki nadgodzin — tryb do 26 lat */
+.young-ot-presets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 14px}
+.young-ot-presets button{background:#20344b;border:1px solid #52b7b0;border-radius:9px;color:#e9fbf8;padding:8px 12px;cursor:pointer;font-weight:700}
+.young-ot-presets button:hover{background:#295468}
+.young-ot-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.young-ot-card{background:#1d2b43;border:1px solid #41536f;border-radius:13px;padding:14px;min-width:0}
+.young-ot-card h3{font-size:15px;margin:0 0 12px}
+.young-ot-card label{display:block;font-size:12px;color:#c6d7ea;margin:10px 0 5px}
+.young-ot-card .counter{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.young-ot-card .counter button{background:#205469;border:1px solid #59bcb8;color:white;border-radius:9px;width:42px;height:40px;font-size:22px;cursor:pointer}
+.young-ot-card .counter strong{font-size:21px;font-variant-numeric:tabular-nums}
+.young-ot-card .young-ot-result{font-size:12px;color:#b6d5ed;margin-top:12px;line-height:1.5}
+@media(max-width:1000px){.young-ot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.young-ot-grid{grid-template-columns:1fr}}
 .young-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0}
 .young-table{width:100%;border-collapse:collapse;min-width:630px}
 .young-table th,.young-table td{padding:10px 12px;text-align:right;border-bottom:1px solid #34425a}
@@ -80,10 +94,17 @@ button.preset:focus-visible,.counter button:focus-visible{outline:3px solid var(
 <div class="field"><label for="youngSickness">Dobrowolne chorobowe (zlecenie nie-studenckie)</label><select id="youngSickness"><option value="no">Nie</option><option value="yes">Tak — 2,45%</option></select></div>
 <div class="field"><label for="youngScheme">Skala dla przychodów powyżej ulgi</label><select id="youngScheme"><option value="old">12% / 32% — obecna</option><option value="new">12% / 24% / 32% — wariant projektu</option></select></div>
 </div><p id="youngContractNote" class="y-help" aria-live="polite"></p></div>
-<div class="card"><h2>Godziny przepracowane w poszczególnych miesiącach</h2><p class="hint">Wpisz rzeczywiste godziny. Przy stałej pensji etatowej użyta zostanie kwota pensji zamiast godzin × stawka.</p>
-<div style="overflow-x:auto"><table class="young-table"><thead><tr><th>Miesiąc</th><th>Godzin</th><th>Brutto</th><th>Składki ZUS + zdrowotna</th><th>Szacunkowe netto</th></tr></thead><tbody id="youngRows"></tbody></table></div></div>
+<div class="card"><h2>Godziny podstawowe i nadgodziny</h2>
+<p class="hint">Wpisz zwykłe godziny w tabeli poniżej. Przy stałej pensji etatowej wynagrodzenie zasadnicze pochodzi z pola „Stała pensja brutto”. Nadgodziny doliczane są osobno.</p>
+<h3>Nadgodziny 100% — soboty po 8 godzin</h3>
+<div class="young-ot-presets"><span>Ustaw we wszystkich miesiącach:</span><button type="button" data-young-preset="sat" data-num="0">0</button><button type="button" data-young-preset="sat" data-num="1">1</button><button type="button" data-young-preset="sat" data-num="2">2</button><button type="button" data-young-preset="sat" data-num="3">3</button><button type="button" data-young-preset="sat" data-num="4">4</button></div>
+<h3>Nadgodziny 50% — liczba godzin</h3>
+<div class="young-ot-presets"><span>Ustaw we wszystkich miesiącach:</span><button type="button" data-young-preset="half" data-num="0">0</button><button type="button" data-young-preset="half" data-num="1">1</button><button type="button" data-young-preset="half" data-num="2">2</button><button type="button" data-young-preset="half" data-num="3">3</button><button type="button" data-young-preset="half" data-num="4">4</button></div>
+<p id="youngOvertimeNote" class="hint">Na etacie: 100% to normalna stawka + 100% dodatku, a 50% to stawka + 50% dodatku. Na zleceniu takie dodatki obowiązują tylko po uzgodnieniu w umowie — tutaj jest to symulacja przy wybranych mnożnikach.</p>
+<div class="young-ot-grid" id="youngOvertimeMonths"></div>
+<h3>Rozliczenie miesięczne</h3><div style="overflow-x:auto"><table class="young-table"><thead><tr><th>Miesiąc</th><th>Zwykłe godziny</th><th>100% / 50%</th><th>Brutto razem</th><th>Składki ZUS + zdrowotna</th><th>Netto przed rocznym PIT</th></tr></thead><tbody id="youngRows"></tbody></table></div></div>
 <div class="card"><h2>Twoje podsumowanie roczne</h2><div class="young-summary">
-<div class="metric"><small>Przychód brutto za rok</small><strong id="youngGross">0 zł</strong></div><div class="metric"><small>Netto po rocznym PIT</small><strong id="youngNet">0 zł</strong></div><div class="metric"><small>Średnio netto / miesiąc</small><strong id="youngAverage">0 zł</strong></div><div class="metric"><small>Wykorzystanie ulgi dla młodych</small><strong id="youngUsed">0 / 85 528 zł</strong></div><div class="metric"><small>Pozostało do limitu PIT-0</small><strong id="youngLeft">85 528 zł</strong></div><div class="metric"><small>Roczny PIT (szacunek)</small><strong id="youngPit">0 zł</strong></div></div>
+<div class="metric"><small>Przychód brutto za rok</small><strong id="youngGross">0 zł</strong></div><div class="metric"><small>Brutto z nadgodzin za rok</small><strong id="youngOvertimeGross">0 zł</strong></div><div class="metric"><small>Netto dodatkowo z nadgodzin po PIT</small><strong id="youngOvertimeNet">0 zł</strong></div><div class="metric"><small>Netto po rocznym PIT</small><strong id="youngNet">0 zł</strong></div><div class="metric"><small>Średnio netto / miesiąc</small><strong id="youngAverage">0 zł</strong></div><div class="metric"><small>Wykorzystanie ulgi dla młodych</small><strong id="youngUsed">0 / 85 528 zł</strong></div><div class="metric"><small>Pozostało do limitu PIT-0</small><strong id="youngLeft">85 528 zł</strong></div><div class="metric"><small>Roczny PIT (szacunek)</small><strong id="youngPit">0 zł</strong></div></div>
 <p id="youngWarning" class="y-help" aria-live="polite"></p><p class="hint">Ulga dla młodych obejmuje kwalifikujące się przychody do 85 528 zł rocznie. To <b>nie jest</b> limit zarobków pełnoletniego dziecka istotny dla ulgi 4+ rodzica. Kwoty podatkowe są prognozą, a nie paskiem płacowym. Przy pracy osoby poniżej 18 lat obowiązują dodatkowe ograniczenia prawa pracy.</p></div>
 </section>
 <div id="adultWorkspace"><div class="ui-legend" role="note"><b>Jak korzystać?</b><span class="ui-legend-item"><span aria-hidden="true" class="ui-swatch"></span> Zielono-morskie pola — wpisujesz lub wybierasz</span><span class="ui-legend-item"><span aria-hidden="true" class="ui-swatch output"></span> Ciemne pola — wynik obliczony automatycznie</span><span class="ui-legend-note">Zmiany przeliczają wyniki na bieżąco.</span></div><div aria-hidden="true" hidden="" id="legacyResultBindings"><section class="grid" id="monthlySplit"><div class="metric"><small>Wybrany miesiąc</small><select id="viewMonth" style="margin-top:4px"><option value="0">Styczeń</option><option value="1">Luty</option><option value="2">Marzec</option><option value="3">Kwiecień</option><option value="4">Maj</option><option value="5">Czerwiec</option><option value="6">Lipiec</option><option value="7">Sierpień</option><option value="8">Wrzesień</option><option value="9">Październik</option><option value="10">Listopad</option><option value="11">Grudzień</option></select></div><div class="metric"><small>Etat na konto (bez umowy o dzieło)</small><strong id="etNet">–</strong></div><div class="metric"><small>Umowa o dzieło na konto</small><strong id="dzieNet">–</strong></div><div class="metric"><small>Łącznie na konto w miesiącu</small><strong id="bothNet">–</strong></div></section><section class="grid" id="metrics"><div class="metric"><small>Nadgodziny 100% / 50% (h)</small><strong id="m_count">–</strong></div><div class="metric"><small>Dodatkowe netto po rocznym PIT</small><strong class="green" id="m_extra">–</strong></div><div class="metric"><small>Średnio netto za sobotę 8 h (100%)</small><strong id="m_avg">–</strong></div><div class="metric"><small>Średnio netto za 1 godzinę 50%</small><strong id="m_avg50">–</strong></div><div class="metric"><small>Rozliczenie roczne PIT (zwrot / dopłata)</small><strong id="m_settle">–</strong></div></section></div><p class="hint">Wprowadź dane poniżej. Wyniki miesięczne, roczne i wykresy znajdziesz po formularzu — bez powielania tych samych podsumowań na początku strony.</p>
@@ -278,23 +299,44 @@ el('ikzeAuto').addEventListener('change',()=>{setIkzeYearLimit();saveState()});
 
 // Oddzielny, prosty model dla osób poniżej 26 lat. Bez domyślnych danych osobistych.
 let youngHours=Array(12).fill(0);
+let youngSat=Array(12).fill(0);
+let youngHalf=Array(12).fill(0);
 const yInputIds=['youngContract','youngStudent','youngRate','youngSalary','youngYear','youngBirthday','youngSickness','youngScheme'];
 const yVal=id=>Math.max(0,Number(el(id).value)||0);
-function youngCalc(redrawRows=true){
+function youngOtFigures(i){
+ const contract=el('youngContract').value,year=Math.round(yVal('youngYear'))||2027;
+ const fixed=yVal('youngSalary'),rate=yVal('youngRate');
+ const nominal=Math.max(1,nominalHours(year,i));
+ const hourly=contract==='etat'&&fixed>0?fixed/nominal:rate;
+ const gross100=youngSat[i]*8*hourly*2;
+ const gross50=youngHalf[i]*hourly*1.5;
+ return {nominal,hourly,gross100,gross50,extra:gross100+gross50};
+}
+function drawYoungOvertime(){
+ el('youngOvertimeMonths').innerHTML=monthNames.map((name,i)=>{
+  const ot=youngOtFigures(i);
+  return `<div class="young-ot-card"><h3>${name} · ${Math.round(yVal('youngYear'))||2027}</h3>
+   <label>Soboty 100% (po 8 h)</label><div class="counter"><button type="button" data-young-counter="sat" data-i="${i}" data-d="-1" aria-label="Mniej sobót ${name}">−</button><strong>${youngSat[i]}</strong><button type="button" data-young-counter="sat" data-i="${i}" data-d="1" aria-label="Więcej sobót ${name}">+</button></div>
+   <label>Godziny 50%</label><div class="counter"><button type="button" data-young-counter="half" data-i="${i}" data-d="-1" aria-label="Mniej godzin 50% ${name}">−</button><strong>${youngHalf[i]}</strong><button type="button" data-young-counter="half" data-i="${i}" data-d="1" aria-label="Więcej godzin 50% ${name}">+</button></div>
+   <div class="young-ot-result">Nominał etatu: ${ot.nominal} h<br>100%: ${zl(ot.gross100)} brutto · 50%: ${zl(ot.gross50)} brutto</div></div>`
+ }).join('');
+}
+function youngCompute(includeOvertime=true){
  const contract=el('youngContract').value,student=el('youngStudent').value==='yes';
  const rate=yVal('youngRate'),fixed=yVal('youngSalary'),year=Math.round(yVal('youngYear'))||2027;
  const bday=el('youngBirthday').value;
  const birthday=bday?new Date(bday+'T12:00:00'):null;
- let annualGross=0,annualSocial=0,annualHealth=0,annualTaxBase=0,exemptUsed=0;
+ let annualGross=0,annualSocial=0,annualHealth=0,annualTaxBase=0,exemptUsed=0,annualOtGross=0;
  const months=[];
  for(let i=0;i<12;i++){
-  const gross=contract==='etat'&&fixed>0?fixed:rate*youngHours[i];
+  const baseGross=contract==='etat'&&fixed>0?fixed:rate*youngHours[i];
+  const ot=includeOvertime?youngOtFigures(i).extra:0;
+  const gross=baseGross+ot;annualOtGross+=ot;
   const noContrib=contract==='zlecenie'&&student;
   const socRate=contract==='etat'?0.1371:(noContrib?0:(el('youngSickness').value==='yes'?0.1371:0.1126));
   const social=gross*socRate,health=noContrib?0:(gross-social)*.09;
-  // Wypłaty miesięczne modelujemy na koniec miesiąca, gdy podano urodziny.
   const payDate=new Date(year,i+1,0,12);
-  const youngEligible=!birthday||payDate<=birthday;
+  const youngEligible=!birthday||payDate<birthday;
   const exempt=youngEligible?Math.min(gross,Math.max(0,85528-exemptUsed)):0;
   exemptUsed+=exempt;
   const taxablePart=Math.max(0,gross-exempt);
@@ -302,31 +344,38 @@ function youngCalc(redrawRows=true){
   const cost=taxablePart>0?(contract==='etat'?Math.min(250,taxablePart):Math.max(0,(taxablePart-deductibleSocial)*.2)):0;
   const taxable=Math.max(0,taxablePart-deductibleSocial-cost);
   annualTaxBase+=taxable;annualGross+=gross;annualSocial+=social;annualHealth+=health;
-  months.push({gross,social,health,netBeforePit:gross-social-health});
+  months.push({baseGross,ot,gross,social,health,netBeforePit:gross-social-health});
  }
  const scheme=el('youngScheme').value;
- const pit=Math.max(0,bracket(annualTaxBase,scheme)-Math.min(3600,bracket(annualTaxBase,scheme)));
- // Z uwagi na założenie proporcjonalnego kosztu 20% nie-studenckie zlecenie jest przybliżeniem.
- const net=annualGross-annualSocial-annualHealth-pit;
- let cumulative=0;
+ const pit=Math.max(0,bracket(annualTaxBase,scheme)-3600);
+ return {contract,student,annualGross,annualSocial,annualHealth,annualTaxBase,exemptUsed,annualOtGross,months,pit,net:annualGross-annualSocial-annualHealth-pit,birthday};
+}
+function youngCalc(redrawRows=true){
+ const r=youngCompute(true),without=youngCompute(false);
+ const {contract,student,annualGross,exemptUsed,annualOtGross,months,pit,net,birthday}=r;
  if(redrawRows){
- el('youngRows').innerHTML=months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td><input type="number" min="0" step="1" data-young-month="${i}" value="${youngHours[i]}" aria-label="Godziny ${monthNames[i]}"></td><td>${zl(m.gross)}</td><td>${zl(m.social+m.health)}</td><td>${zl(m.netBeforePit)}</td></tr>`).join('');
+  el('youngRows').innerHTML=months.map((m,i)=>`<tr><td>${monthNames[i]}</td><td><input type="number" min="0" step="1" data-young-month="${i}" value="${youngHours[i]}" aria-label="Zwykłe godziny ${monthNames[i]}"></td><td>${youngSat[i]} / ${youngHalf[i]} h</td><td>${zl(m.gross)}</td><td>${zl(m.social+m.health)}</td><td>${zl(m.netBeforePit)}</td></tr>`).join('');
  }else{
- const trs=el('youngRows').querySelectorAll('tr');months.forEach((m,i)=>{if(trs[i]){const td=trs[i].querySelectorAll('td');td[2].textContent=zl(m.gross);td[3].textContent=zl(m.social+m.health);td[4].textContent=zl(m.netBeforePit)}});
+  const trs=el('youngRows').querySelectorAll('tr');months.forEach((m,i)=>{if(trs[i]){const td=trs[i].querySelectorAll('td');td[2].textContent=youngSat[i]+' / '+youngHalf[i]+' h';td[3].textContent=zl(m.gross);td[4].textContent=zl(m.social+m.health);td[5].textContent=zl(m.netBeforePit)}});
  }
  el('youngGross').textContent=zl(annualGross);
+ el('youngOvertimeGross').textContent=zl(annualOtGross);
+ el('youngOvertimeNet').textContent=zl(net-without.net);
  el('youngNet').textContent=zl(net);
  el('youngAverage').textContent=zl(net/12);
  el('youngUsed').textContent=zl(exemptUsed)+' / 85 528 zł';
  el('youngLeft').textContent=zl(Math.max(0,85528-exemptUsed));
  el('youngPit').textContent=zl(pit);
  let note=contract==='zlecenie'&&student?'Uczeń/student przed 26. urodzinami na zwykłym zleceniu z innym podmiotem niż własny pracodawca: co do zasady bez ZUS i składki zdrowotnej, a PIT-0 do limitu 85 528 zł.':contract==='etat'?'Etat: ulga dla młodych zwalnia z PIT, ale składki ZUS i zdrowotna nadal są potrącane.':'Zlecenie bez statusu ucznia/studenta: oszacowano typowe składki, ale rzeczywiste ubezpieczenia zależą od innych tytułów i warunków umowy.';
- if(birthday)note+=' Ulgę stosujemy do końca miesiąca 26. urodzin jedynie orientacyjnie; rzeczywista granica zależy od dnia otrzymania wypłaty.';
+ if(birthday)note+=' Ulgę stosujemy orientacyjnie według daty wypłaty przyjętej na koniec miesiąca; rzeczywista granica zależy od daty otrzymania wypłaty.';
  el('youngContractNote').textContent=note;
- el('youngWarning').textContent=annualGross>85528?'Przychód przekracza 85 528 zł. Nadwyżka może być opodatkowana; jej wysokość i moment opodatkowania zależą od konkretnych wypłat.':(exemptUsed>75000?'Zbliżasz się do limitu ulgi PIT-0 85 528 zł.':'PIT-0 nie oznacza automatycznego zwolnienia ze składek na etacie.');
+ el('youngOvertimeNote').textContent=contract==='etat'?'Etat: stawka godzinowa z pensji miesięcznej / nominalne godziny; 100% = 2 × stawka (soboty po 8 h), 50% = 1,5 × stawka. To symulacja dla nadgodzin rozliczanych dodatkiem, bez dnia wolnego.': 'Zlecenie: przepisy o dodatkach za nadgodziny pracownicze nie stosują się automatycznie. Kwoty 100% (2×) i 50% (1,5×) to scenariusz WYŁĄCZNIE gdy takie stawki wynikają z umowy zlecenia.';
+ el('youngWarning').textContent=annualGross>85528?'Przychód przekracza 85 528 zł. Nadwyżka może być opodatkowana; moment opodatkowania zależy od konkretnych wypłat.':(exemptUsed>75000?'Zbliżasz się do limitu ulgi PIT-0 85 528 zł.':'PIT-0 nie oznacza automatycznego zwolnienia ze składek na etacie.');
  el('youngSalary').disabled=contract!=='etat';
  el('youngSickness').disabled=contract==='etat'||student;
+ drawYoungOvertime();
 }
+
 function changeProfile(mode){
  const young=mode==='young';el('youngWorkspace').hidden=!young;el('adultWorkspace').hidden=young;
  el('tabYoung').setAttribute('aria-selected',String(young));el('tabAdult').setAttribute('aria-selected',String(!young));
@@ -336,6 +385,15 @@ function changeProfile(mode){
 el('tabAdult').addEventListener('click',()=>changeProfile('adult'));
 el('tabYoung').addEventListener('click',()=>changeProfile('young'));
 for(const id of yInputIds){el(id).addEventListener('input',()=>{youngCalc();saveState()});el(id).addEventListener('change',()=>{youngCalc();saveState()})}
+el('youngOvertimeMonths').addEventListener('click',e=>{
+ const b=e.target.closest('button[data-young-counter]');if(!b)return;
+ const i=Number(b.dataset.i),d=Number(b.dataset.d),arr=b.dataset.youngCounter==='sat'?youngSat:youngHalf;
+ arr[i]=Math.max(0,Math.min(99,arr[i]+d));youngCalc(false);saveState();
+});
+document.querySelectorAll('[data-young-preset]').forEach(b=>b.addEventListener('click',()=>{
+ const n=Number(b.dataset.num);if(b.dataset.youngPreset==='sat')youngSat=Array(12).fill(n);else youngHalf=Array(12).fill(n);
+ youngCalc(false);saveState();
+}));
 el('youngRows').addEventListener('input',e=>{
  const index=Number(e.target.dataset.youngMonth);
  if(!Number.isInteger(index)||index<0||index>11)return;
@@ -349,11 +407,11 @@ el('youngRows').addEventListener('change',()=>{youngCalc(false);saveState()});
 
 // Dane z trybu młodego dołączone do istniejącej kopii zapasowej, bez publikowania w repozytorium.
 const baseSnapshot=snapshot;
-snapshot=function(){const v=baseSnapshot();v.youngHours=[...youngHours];v.profileMode=el('tabYoung').getAttribute('aria-selected')==='true'?'young':'adult';v.version=28;return v};
+snapshot=function(){const v=baseSnapshot();v.youngHours=[...youngHours];v.youngSat=[...youngSat];v.youngHalf=[...youngHalf];v.profileMode=el('tabYoung').getAttribute('aria-selected')==='true'?'young':'adult';v.version=29;return v};
 const baseApplySnapshot=applySnapshot;
-applySnapshot=function(data){baseApplySnapshot(data);youngHours=Array.isArray(data.youngHours)?data.youngHours.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngHours.length<12)youngHours.push(0);youngCalc();changeProfile(data.profileMode==='young'?'young':'adult')};
+applySnapshot=function(data){baseApplySnapshot(data);youngHours=Array.isArray(data.youngHours)?data.youngHours.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngHours.length<12)youngHours.push(0);youngSat=Array.isArray(data.youngSat)?data.youngSat.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);youngHalf=Array.isArray(data.youngHalf)?data.youngHalf.slice(0,12).map(v=>Math.max(0,Number(v)||0)):Array(12).fill(0);while(youngSat.length<12)youngSat.push(0);while(youngHalf.length<12)youngHalf.push(0);youngCalc();changeProfile(data.profileMode==='young'?'young':'adult')};
 // Dotychczasowe uruchomienie programu już odczytało stare dane; po migracji pobierz istniejące godziny z aktualnego klucza.
-try{const persisted=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(persisted){youngHours=Array.isArray(persisted.youngHours)?persisted.youngHours.slice(0,12):Array(12).fill(0);changeProfile(persisted.profileMode==='young'?'young':'adult')}}catch(e){}
+try{const persisted=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(persisted){youngHours=Array.isArray(persisted.youngHours)?persisted.youngHours.slice(0,12):Array(12).fill(0);youngSat=Array.isArray(persisted.youngSat)?persisted.youngSat.slice(0,12):Array(12).fill(0);youngHalf=Array.isArray(persisted.youngHalf)?persisted.youngHalf.slice(0,12):Array(12).fill(0);changeProfile(persisted.profileMode==='young'?'young':'adult')}}catch(e){}
 try{if(!localStorage.getItem(STORAGE_KEY))changeProfile(localStorage.getItem('kalkulator_pit_v28_profile')==='young'?'young':'adult')}catch(e){}
 youngCalc();
 renderMonths();setIkzeYearLimit();fetchIkzeLimits();render();})();
