@@ -233,6 +233,11 @@ table{font-size:12px}th{color:#8d939f!important;font-size:11px;font-weight:550!i
 @media(max-width:1200px){.app-shell{grid-template-columns:216px minmax(0,1fr)}.app-content{padding:0 22px 44px}.app-sidebar{padding:20px 9px}.overview-kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:870px){.app-shell{display:block}.app-sidebar{position:fixed;width:250px;left:0;top:0;transform:translateX(-102%);transition:transform .2s;box-shadow:15px 0 55px #0008}.app-shell.sidebar-open .app-sidebar{transform:translateX(0)}.app-content{padding:0 16px 30px}.sidebar-toggle{display:block;flex:none}.app-topbar{padding-top:18px;flex-wrap:wrap;gap:13px}.app-topbar > div:last-child{width:100%}.app-topbar h1{font-size:19px!important}}
 @media(max-width:650px){.overview-kpis{grid-template-columns:1fr 1fr}.overview-main{grid-column:1/-1}.overview-main strong{font-size:32px}.overview-stat{padding:15px}.overview-stat strong{font-size:20px}.overview-stat:last-child{grid-column:1/-1}.overview-welcome{flex-direction:column;align-items:stretch;padding:18px}.overview-actions{min-width:0}.card{padding:16px!important}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fields{grid-template-columns:1fr}.app-topbar .sub{font-size:11px}.young-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style><style id="resetAllStyles">
+.reset-all-btn{border:1px solid #6b3f49!important;background:#28191e!important;color:#f8b6be!important}
+.reset-all-btn:hover{background:#44242c!important;border-color:#c96a7b!important;color:#fff!important}
+.reset-all-btn:focus-visible{outline:2px solid #f8a6b2;outline-offset:3px}
+@media(max-width:650px){.reset-all-btn{width:100%;text-align:center}}
 </style></head><body><div class="app-shell"><aside class="app-sidebar" id="appSidebar">
 <div class="brand"><div class="brand-mark"><span>✳</span></div><div><strong>moje<span>podatki</span></strong><small>PERSONAL FINANCE STUDIO</small></div></div>
 <div class="sidebar-label">TWÓJ PROFIL</div>
@@ -256,8 +261,8 @@ table{font-size:12px}th{color:#8d939f!important;font-size:11px;font-weight:550!i
 </div>
 <div class="sidebar-spacer"></div>
 <div class="privacy-card"><div class="privacy-mark">●</div><div><strong>Dane prywatne</strong><p>Ustawienia pozostają w tej przeglądarce. Zrób kopię przed zmianą urządzenia.</p></div></div>
-<div class="sidebar-footer">MOJE PODATKI <span>V36</span></div>
-</aside><main class="app-content" id="appContent"><div class="app-topbar"><button aria-label="Otwórz menu" class="sidebar-toggle" id="sidebarToggle" type="button">☰</button><div><h1>Panel finansowy <span class="pill" id="yearBadge">2027</span></h1><p class="sub">Plan wynagrodzenia, podatków i ulg w jednym miejscu.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="preset" id="csv">Eksport miesięcy CSV</button><button class="preset" id="backup">Pobierz kopię danych</button><button class="preset" id="restore">Wczytaj kopię danych</button><input accept=".json,application/json" id="restoreFile" style="display:none" type="file"/></div></div>
+<div class="sidebar-footer">MOJE PODATKI <span>V38</span></div>
+</aside><main class="app-content" id="appContent"><div class="app-topbar"><button aria-label="Otwórz menu" class="sidebar-toggle" id="sidebarToggle" type="button">☰</button><div><h1>Panel finansowy <span class="pill" id="yearBadge">2027</span></h1><p class="sub">Plan wynagrodzenia, podatków i ulg w jednym miejscu.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="preset" id="csv">Eksport miesięcy CSV</button><button class="preset" id="backup">Pobierz kopię danych</button><button class="preset" id="restore">Wczytaj kopię danych</button><button class="preset reset-all-btn" id="resetAllData" type="button" title="Usuń wszystkie dane zapisane w tej przeglądarce">Wyczyść wszystkie dane</button><input accept=".json,application/json" id="restoreFile" style="display:none" type="file"/></div></div>
 
 <section aria-label="Kalkulator dla osób do 26 lat" hidden="" id="youngWorkspace">
 <div class="card workspace-view" data-view="young-income"><h2>Jestem młody — kalkulator brutto / netto</h2><p class="y-help">Dla osoby przed 26. urodzinami. Stawka godzinowa i liczba godzin z każdego miesiąca; na etacie możesz zamiast tego podać stałą pensję miesięczną.</p>
@@ -749,7 +754,7 @@ const STORE='moje_podatki_budget_v36';
 const money=x=>Math.round(x).toLocaleString('pl-PL')+' zł';
 const defaults=[
  ['income','Wynagrodzenie netto'],['income','Dodatkowe przychody'],
- ['expense','Kieszonkowe'],['expense','Alimenty'],['expense','Raty i kredyty'],['expense','Opłaty mieszkaniowe'],['expense','Dzieci'],['expense','Media i internet'],['expense','Subskrypcje'],['expense','Ubezpieczenia'],['expense','Podróże i wycieczki'],['expense','Transport i paliwo'],['expense','Życie / zakupy'],
+ ['expense','Kieszonkowe'],['expense','Raty i kredyty'],['expense','Opłaty mieszkaniowe'],['expense','Dzieci'],['expense','Media i internet'],['expense','Subskrypcje'],['expense','Ubezpieczenia'],['expense','Podróże i wycieczki'],['expense','Transport i paliwo'],['expense','Życie / zakupy'],
  ['investment','IKE'],['investment','IKZE'],['investment','ETF / akcje'],['investment','Kryptowaluty']
 ];
 const groups=[['income','Przychody'],['expense','Wydatki'],['investment','Inwestycje']];
@@ -796,4 +801,34 @@ $('budgetRestoreFile').addEventListener('change',async e=>{const f=e.target.file
 restore();renderTable();
 })();
 </script>
-</body></html>
+<script id="resetAllScript">
+(() => {
+  'use strict';
+  const button = document.getElementById('resetAllData');
+  if (!button) return;
+  button.addEventListener('click', event => {
+    // Capture and stop the global autosave click listener from re-saving cleared data.
+    event.stopPropagation();
+    const accepted = window.confirm(
+      'UWAGA! Usunąć WSZYSTKIE zapisane dane?\n\n' +
+      'Zostaną wyczyszczone formularze Dorosły i Młody, godziny, premie, ulgi oraz cały budżet domowy. ' +
+      'Usunięte zostaną także lokalnie zapisane ustawienia.\n\n' +
+      'Tej operacji nie da się cofnąć. Przed wyczyszczeniem możesz pobrać kopię danych.\n\n' +
+      'Kliknij OK, aby usunąć dane, lub Anuluj, aby je zachować.'
+    );
+    if (!accepted) return;
+    try {
+      [
+        'kalkulator_pit_v19_public_dane',
+        'kalkulator_pit_v28_profile',
+        'moje_podatki_budget_v36'
+      ].forEach(key => window.localStorage.removeItem(key));
+    } catch (error) {
+      window.alert('Nie udało się wyczyścić zapisanych danych. Sprawdź ustawienia pamięci przeglądarki.');
+      return;
+    }
+    // Load pristine default form state; no data is removed from other websites.
+    window.location.reload();
+  });
+})();
+</script></body></html>
